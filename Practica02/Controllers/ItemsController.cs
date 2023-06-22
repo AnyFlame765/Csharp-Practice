@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.AspNetCore.Mvc;
 using Practica02.Datos;
 using Practica02.Model;
 using Practica02.Model.Dto;
@@ -10,9 +11,16 @@ namespace Practica02.Controllers;
 public class ItemsController : Controller
 {
 
+    private readonly ILogger<ItemsController> _logger;
+    public ItemsController(ILogger<ItemsController>  logger)
+    {
+        _logger = logger;
+    }
+
     [HttpGet]
     public ActionResult<IEnumerable<MProductDto>>  getAllItem()
     {
+        _logger.LogInformation("Obtener productos");
         return Ok(ProductStore.ProductList);
     }
 
@@ -25,6 +33,7 @@ public class ItemsController : Controller
     {
         if (id == 0)
         {
+            _logger.LogError("Error de id: " + id);
             return BadRequest();
         }
 
@@ -113,6 +122,26 @@ public class ItemsController : Controller
         result.isaviable = productU.isaviable;
         result.cantidad = productU.cantidad;
 
+        return NoContent();
+    }
+
+    [HttpPatch("id:int")]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public IActionResult patchProduct(int id, JsonPatchDocument<MProductDto> productPatch)
+    {
+        if (productPatch == null || id == 0)
+        {
+            return BadRequest("Camppos Nulos o id invalido");
+        }
+
+        var oldProduct = ProductStore.ProductList.FirstOrDefault(v => v.Id == id);
+        
+        productPatch.ApplyTo(oldProduct, ModelState);
+
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
         return NoContent();
     }
 
