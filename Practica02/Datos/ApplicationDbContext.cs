@@ -10,7 +10,7 @@ public class ApplicationDbContext : DbContext
          
     }
     
-    public DbSet<MProduct> product { get; set; }
+    public DbSet<MProduct> Product { get; set; }
     
     //Consola de administrador de paquete
     protected override void OnModelCreating(ModelBuilder modelBuilder)

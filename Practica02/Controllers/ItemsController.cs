@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.JsonPatch;
+﻿using System.Data;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Practica02.Datos;
-using Practica02.Model;
 using Practica02.Model.Dto;
 
 namespace Practica02.Controllers;
@@ -12,20 +13,28 @@ public class ItemsController : Controller
 {
 
     private readonly ILogger<ItemsController> _logger;
-    public ItemsController(ILogger<ItemsController>  logger)
+    private readonly ApplicationDbContext _db;
+    
+    public ItemsController(ILogger<ItemsController>  logger, ApplicationDbContext db)
     {
         _logger = logger;
+        _db = db;
     }
 
     [HttpGet]
     public ActionResult<IEnumerable<MProductDto>>  getAllItem()
     {
         _logger.LogInformation("Obtener productos");
-        return Ok(ProductStore.ProductList);
+
+        var query = "SELECT * FROM items";
+        
+        var result = _db.Product.FromSqlRaw(query).ToList();
+        
+        return Ok(result);
     }
 
     
-    [HttpGet("id", Name = "GetProduct")]
+    [HttpGet("id:int", Name = "GetProduct")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -37,13 +46,15 @@ public class ItemsController : Controller
             return BadRequest();
         }
 
-        var product = ProductStore.ProductList.FirstOrDefault(v => v.Id == id);
+        var query = "SELECT * FROM items WHERE id = @id";
 
-        if (product == null)
+        var result = _db.Product.FromSqlRaw(query, new Npgsql.NpgsqlParameter("@id", id));
+
+        if (!result.Any())
         {
             return NotFound();
         }
-        return Ok(product);
+        return Ok(result);
     }
 
     [HttpPost]
@@ -56,30 +67,39 @@ public class ItemsController : Controller
         {
             return BadRequest();
         }
-
-        if (ProductStore.ProductList.FirstOrDefault(v => v.name.ToLower() == product.name.ToLower()) != null)
-        {
-            ModelState.AddModelError("ProductExist", "Producto ya existe"); //validacion personalizada
-            return BadRequest(ModelState);
-        }
-        
         if (product == null)
         {
             return BadRequest();
         }
-
         if (product.Id > 0)
         {
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
+    
+        var query = "INSERT INTO items (nserie, name, isaviable, date, cantidad) VALUES (@nserie, @name, @isaviable, @date, @cantidad) RETURNING id";
+        
+        var idParameter = new Npgsql.NpgsqlParameter("@id", NpgsqlTypes.NpgsqlDbType.Integer);
+        idParameter.Direction = ParameterDirection.Output;
 
-        product.Id = ProductStore.ProductList.OrderByDescending(v => v.Id).FirstOrDefault().Id + 1;
-        ProductStore.ProductList.Add(product);
+        _db.Database.ExecuteSqlRaw(query, new Npgsql.NpgsqlParameter("@nserie", product.nserie),
+            new Npgsql.NpgsqlParameter("@name", product.name),
+            new Npgsql.NpgsqlParameter("@isaviable", product.isaviable),
+            new Npgsql.NpgsqlParameter("@date", product.date),
+            new Npgsql.NpgsqlParameter("@cantidad", product.cantidad),
+            idParameter);
 
-        return CreatedAtRoute("GetProduct", new {id = product.Id}, product);
+        int productId = (int)idParameter.Value;
+
+        // Insertar datos en la tabla pivote
+        var pivotQuery = "INSERT INTO items_details (id_item, id_user, date) VALUES (@id_item, 1, DATE (NOW()))";
+        _db.Database.ExecuteSqlRaw(pivotQuery, new Npgsql.NpgsqlParameter("@id_item", productId));
+
+        return Ok($"Producto registrado con ID: {productId}");
     }
 
-    [HttpDelete("/id: int")]
+    
+    
+    [HttpDelete("id: int")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public IActionResult deleteProduct(int id)
@@ -89,21 +109,15 @@ public class ItemsController : Controller
             return BadRequest();
         }
 
-        var product = ProductStore.ProductList.FirstOrDefault(v => v.Id == id);
-
-        if (product == null)
-        {
-            return NotFound();
-        }
-
-        ProductStore.ProductList.Remove(product);
+        var product = "DELETE FROM items WHERE id = @id";
+        _db.Database.ExecuteSqlRaw(product, new Npgsql.NpgsqlParameter("@id", id));
 
         return NoContent(); 
     }
     
     //UPDATE
     [HttpPut("id: int")]
-    public IActionResult updateProduct([FromBody] MProductDto productU, int id)
+    public  IActionResult updateProduct([FromBody] MProductDto productU, int id)
     {
         if (!ModelState.IsValid)
         {
@@ -115,13 +129,16 @@ public class ItemsController : Controller
         {
             return BadRequest();
         }
+        
+        var query = "UPDATE items SET nserie = @nserie, name = @name, isaviable = @isaviable, date = @date, cantidad = @cantidad WHERE id = @id";
+         _db.Database.ExecuteSqlRaw(query, new Npgsql.NpgsqlParameter("@nserie", productU.nserie),
+            new Npgsql.NpgsqlParameter("@name", productU.name),
+            new Npgsql.NpgsqlParameter("@isaviable", productU.isaviable),
+            new Npgsql.NpgsqlParameter("@date", productU.date),
+            new Npgsql.NpgsqlParameter("@cantidad", productU.cantidad),
+            new Npgsql.NpgsqlParameter("@id", productU.Id));
 
-        var result  = ProductStore.ProductList.FirstOrDefault(v => v.Id == id);
-        result.nserie = productU.nserie;
-        result.name = productU.name;
-        result.isaviable = productU.isaviable;
-        result.cantidad = productU.cantidad;
-
+        
         return NoContent();
     }
 
@@ -131,7 +148,7 @@ public class ItemsController : Controller
     {
         if (productPatch == null || id == 0)
         {
-            return BadRequest("Camppos Nulos o id invalido");
+            return BadRequest("Campos Nulos o id invalido");
         }
 
         var oldProduct = ProductStore.ProductList.FirstOrDefault(v => v.Id == id);
