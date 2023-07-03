@@ -30,7 +30,7 @@ public class ItemsController : Controller
         
         var result = _db.Product.FromSqlRaw(query).ToList();
         
-        return Ok(result);
+        return Ok(result);  
     }
 
     
@@ -137,8 +137,7 @@ public class ItemsController : Controller
             new Npgsql.NpgsqlParameter("@date", productU.date),
             new Npgsql.NpgsqlParameter("@cantidad", productU.cantidad),
             new Npgsql.NpgsqlParameter("@id", productU.Id));
-
-        
+         
         return NoContent();
     }
 

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Practica02.Datos;
+using Practica02.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +18,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(option =>
         builder.Configuration.GetConnectionString("DefaultConnection")
         );
 });
-    
+
+builder.Services.AddScoped<IUser, UserRepository>();
 
 var app = builder.Build();
 

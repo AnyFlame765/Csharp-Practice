@@ -12,6 +12,8 @@ public class ApplicationDbContext : DbContext
     
     public DbSet<MProduct> Product { get; set; }
     
+    public DbSet<UserModel> User { get; set; }
+
     //Consola de administrador de paquete
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
