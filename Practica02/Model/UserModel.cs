@@ -2,7 +2,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Practica02.Model;
-
 public class UserModel
 {
     [Key]
@@ -18,5 +17,6 @@ public class UserModel
     public string Lastname { get; set; }
     
     [Required]
-    public int departmentId { get; set; }
-}
+    public int departmentid { get; set; }
+    
+} 

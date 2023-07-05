@@ -59,4 +59,22 @@ public class UserController: ControllerBase
         return Ok("Usuario eliminado");
     }
 
+    [HttpPut]
+    public async Task<ActionResult<bool>> UpdatUser(int id, [FromBody] UserModel user)
+    {
+        if (id == 0)
+        {
+            return BadRequest();
+        }
+
+        if (!ModelState.IsValid)
+        { 
+            ModelState.AddModelError("ParametersRequired", "Todos los campos son necesarios");
+            return BadRequest();
+        }
+
+        await _userRepository.UpdateUser(id, user);
+
+        return Ok("Usuario Actualizado");
+    }
 }

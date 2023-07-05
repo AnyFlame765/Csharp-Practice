@@ -19,8 +19,9 @@ public class UserRepository : IUser
 
     public async Task<IEnumerable<UserModel>>  GetAllUser()
     {
-        var query = "SELECT * FROM users";
-        var result = await _db.User.FromSqlRaw(query).ToListAsync();
+        //relacionar la tabla de usuarios con la tabla de Departamentos
+        var innerjoinQuery = "SELECT * FROM users INNER JOIN department ON users.departmentid = departments.id";
+        var result = await _db.User.FromSqlRaw(innerjoinQuery).ToListAsync();
         return result;
     }
 
@@ -37,19 +38,29 @@ public class UserRepository : IUser
 
     public async Task<bool> CreateUser(UserModel userModel)
     {
-        var query = "INSERT INTO users(name, lastname, departmentid) VALUES (@name, @lastname, @departmentId )";
+        var query = "INSERT INTO users(name, lastname, departmentid) VALUES (@name, @lastname, @departmentid )";
         var result = await _db.Database.ExecuteSqlRawAsync(
             query,
             new Npgsql.NpgsqlParameter("@name", userModel.Name),
             new Npgsql.NpgsqlParameter("@lastname", userModel.Lastname),
-            new Npgsql.NpgsqlParameter("@departmentId", userModel.departmentId)
+            new Npgsql.NpgsqlParameter("@departmentid", userModel.departmentid)
         );
         return result > 0;
     }
 
-    public Task<bool> UpdateUser(int id, UserModel userModel)
+    public async Task<bool> UpdateUser(int id, UserModel userModel)
     {
-        return null;
+        //hacer un subquery para obtener el id del departamento
+        var query = "";
+        var result = await _db.Database.ExecuteSqlRawAsync(
+            query,
+            new Npgsql.NpgsqlParameter("@name", userModel.Name),
+            new Npgsql.NpgsqlParameter("@lastname", userModel.Lastname),
+            new Npgsql.NpgsqlParameter("@departmentid", userModel.departmentid),
+            new Npgsql.NpgsqlParameter("@id", userModel.Id)
+        );
+        
+        return result > 0;
     }
 
     public async Task<bool> DeleteUser(int id)
