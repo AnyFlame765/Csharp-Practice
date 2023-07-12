@@ -1,9 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "8HPPgM+buTSlKyxOQFLyWnSspnnpgl+rzj37oD2y+mbgtynwpbYlVZZiuBfVPdxbYsP39fFogmSLxQkoABYx0Q==",
+  "dgSpecHash": "iSpJjBVc+dFqAvfTWXaMFl8KDk8FjktH8jIZEt/bJyfoVa3etnkVGARaTABtKm+BI66krzG+9W/bUuIJLI+eZw==",
   "success": true,
   "projectFilePath": "C:\\Users\\prac.sistemas\\Documents\\Mike\\C#\\Practica02\\Practica02\\Practica02.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\prac.sistemas\\.nuget\\packages\\automapper\\12.0.1\\automapper.12.0.1.nupkg.sha512",
+    "C:\\Users\\prac.sistemas\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.1\\automapper.extensions.microsoft.dependencyinjection.12.0.1.nupkg.sha512",
     "C:\\Users\\prac.sistemas\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\prac.sistemas\\.nuget\\packages\\microsoft.aspnetcore.jsonpatch\\8.0.0-preview.5.23302.2\\microsoft.aspnetcore.jsonpatch.8.0.0-preview.5.23302.2.nupkg.sha512",
     "C:\\Users\\prac.sistemas\\.nuget\\packages\\microsoft.aspnetcore.mvc.newtonsoftjson\\7.0.1\\microsoft.aspnetcore.mvc.newtonsoftjson.7.0.1.nupkg.sha512",

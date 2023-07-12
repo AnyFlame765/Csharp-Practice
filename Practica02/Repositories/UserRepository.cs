@@ -17,11 +17,13 @@ public class UserRepository : IUser
         _db = db;
     }
 
+    //UserReposirtory
     public async Task<IEnumerable<UserModel>>  GetAllUser()
     {
-        //relacionar la tabla de usuarios con la tabla de Departamentos
-        var innerjoinQuery = "SELECT * FROM users INNER JOIN department ON users.departmentid = departments.id";
-        var result = await _db.User.FromSqlRaw(innerjoinQuery).ToListAsync();
+        
+        // var innerjoinQuery = "SELECT u.id, u.name, u.lastname, u.departmentid ,d.name as departamento FROM users u INNER JOIN department d ON u.departmentid = d.id";
+        var query = "SELECT * FROM users u INNER JOIN department d ON u.departmentidd = d.IdDepartment   ";
+        var result = await _db.User.FromSqlRaw(query).ToListAsync();
         return result;
     }
 
@@ -43,7 +45,7 @@ public class UserRepository : IUser
             query,
             new Npgsql.NpgsqlParameter("@name", userModel.Name),
             new Npgsql.NpgsqlParameter("@lastname", userModel.Lastname),
-            new Npgsql.NpgsqlParameter("@departmentid", userModel.departmentid)
+            new Npgsql.NpgsqlParameter("@departmentid", userModel.iddepartment)
         );
         return result > 0;
     }
@@ -56,7 +58,7 @@ public class UserRepository : IUser
             query,
             new Npgsql.NpgsqlParameter("@name", userModel.Name),
             new Npgsql.NpgsqlParameter("@lastname", userModel.Lastname),
-            new Npgsql.NpgsqlParameter("@departmentid", userModel.departmentid),
+            new Npgsql.NpgsqlParameter("@departmentid", userModel.iddepartment),
             new Npgsql.NpgsqlParameter("@id", userModel.Id)
         );
         

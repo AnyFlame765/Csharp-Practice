@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Practica02;
 using Practica02.Datos;
 using Practica02.Repositories;
 
@@ -20,6 +21,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(option =>
 });
 
 builder.Services.AddScoped<IUser, UserRepository>();
+builder.Services.AddScoped<IDepartment, DepartmentRepository>();
+
+//Agregamsos el servicio de AutoMapper
+builder.Services.AddAutoMapper(typeof(MappingConfig));
 
 var app = builder.Build();
 

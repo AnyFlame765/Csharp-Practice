@@ -1,7 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace Practica02.Model;
+
+[Table(name: "users")]
 public class UserModel
 {
     [Key]
@@ -17,6 +20,10 @@ public class UserModel
     public string Lastname { get; set; }
     
     [Required]
-    public int departmentid { get; set; }
+    public int iddepartment { get; set; }
+    
+    //relacionamos la tabla 
+    [ForeignKey("iddepartment")]
+    public DepartmentModel Department { get; set; }
     
 } 

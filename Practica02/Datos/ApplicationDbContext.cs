@@ -9,13 +9,15 @@ public class ApplicationDbContext : DbContext
     {
          
     }
-    
-    public DbSet<MProduct> Product { get; set; }
-    
+
     public DbSet<UserModel> User { get; set; }
-    
+     
     public DbSet<DepartmentModel> Department { get; set; }
     
+    
+    //otra cosa
+    public DbSet<MProduct> Product { get; set; }
+
     ModelBuilder modelBuilder;
 
     //Consola de administrador de paquete
@@ -23,14 +25,11 @@ public class ApplicationDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
         modelBuilder.HasPostgresExtension("uuid-ossp");
-        
+
         //relacionar la tabla de Usuarios con la tabla de Departamentos
-        modelBuilder.Entity<UserModel>()
-            .HasOne<DepartmentModel>()
-            .WithMany()
-            .HasForeignKey(p => p.departmentid);
+        base.OnModelCreating(modelBuilder);
+        modelBuilder.HasPostgresExtension("uuid-ossp");
+        
     }
-    
-  
-    
+
 }
