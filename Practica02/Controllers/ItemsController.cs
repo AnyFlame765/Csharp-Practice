@@ -140,25 +140,25 @@ public class ItemsController : Controller
          
         return NoContent();
     }
-
-    [HttpPatch("id:int")]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public IActionResult patchProduct(int id, JsonPatchDocument<MProductDto> productPatch)
-    {
-        if (productPatch == null || id == 0)
-        {
-            return BadRequest("Campos Nulos o id invalido");
-        }
-
-        var oldProduct = ProductStore.ProductList.FirstOrDefault(v => v.Id == id);
-        
-        productPatch.ApplyTo(oldProduct, ModelState);
-
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-        return NoContent();
-    }
+    //
+    // [HttpPatch("id:int")]
+    // [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    // public IActionResult patchProduct(int id, JsonPatchDocument<MProductDto> productPatch)
+    // {
+    //     if (productPatch == null || id == 0)
+    //     {
+    //         return BadRequest("Campos Nulos o id invalido");
+    //     }
+    //
+    //     var oldProduct = ProductStore.ProductList.FirstOrDefault(v => v.Id == id);
+    //     
+    //     productPatch.ApplyTo(oldProduct, ModelState);
+    //
+    //     if (!ModelState.IsValid)
+    //     {
+    //         return BadRequest(ModelState);
+    //     }
+    //     return NoContent();
+    // }
 
 }

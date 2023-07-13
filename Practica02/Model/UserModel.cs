@@ -13,13 +13,16 @@ public class UserModel
     
     [Required]
     [MaxLength(30)]
+    [Column(name: "name")]
     public string Name { get; set; }
     
     [Required]
     [MaxLength(30)]
+    [Column(name: "lastname")]
     public string Lastname { get; set; }
     
     [Required]
+    [Column(name: "departmentid")]
     public int iddepartment { get; set; }
     
     //relacionamos la tabla 

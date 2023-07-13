@@ -20,7 +20,7 @@ public class UserRepository : IUser
     //UserReposirtory
     public async Task<IEnumerable<UserModel>>  GetAllUser()
     {
-        
+        //ESTA NO SIRVE :(
         // var innerjoinQuery = "SELECT u.id, u.name, u.lastname, u.departmentid ,d.name as departamento FROM users u INNER JOIN department d ON u.departmentid = d.id";
         var query = "SELECT * FROM users u INNER JOIN department d ON u.departmentidd = d.IdDepartment   ";
         var result = await _db.User.FromSqlRaw(query).ToListAsync();

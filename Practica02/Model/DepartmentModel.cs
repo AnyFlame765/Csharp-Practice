@@ -10,8 +10,10 @@ public class DepartmentModel
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int iddepartment { get; set; }   
-
+    
     [Required]
+    [MaxLength(30)]
+    [Column(name: "name")]
     public string namedepa { get; set; }
     
 }
